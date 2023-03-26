@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="en" title="Coding design">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="10">
+    <title>Leaderboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    
+    <main class="table">
+        <img src="images/SESS - Copy.png" alt="">
+        <!-- <h1>sess</h1> -->
+        <section class="table__header">
+            <h1>Bridge Construction Rankings</h1>
+            
+        </section>
+        <section class="table__body">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Name</th>
+                        <th>Bridge Length</th>
+                        <th>Weight Held</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each rankingList}}
+                    <tr>
+                        <td> {{this.rank}} </td>
+                        <td> <img src="images/{{profileIcon}}" alt="">{{this.name}}</td>
+                        <td>{{this.brgLen}}</td>
+                        <td>{{this.brgWeight}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+                <script>
+                    setInterval(function() {
+                    location.reload();
+                    }, 20000);
+                </script>
+        </section>
+    </main>
+</body>
+
+</html>
