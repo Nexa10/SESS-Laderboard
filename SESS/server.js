@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const HTTP_PORT = process.env.PORT || 8080;
-
+const hostname = '192.168.0.16'
 app.use(express.static('assets'))
 app.use(express.urlencoded({ extended: true }))
 const exphbs = require("express-handlebars");
@@ -12,6 +12,10 @@ app.engine(".hbs", exphbs.engine({
   }
 }));
 app.set("view engine", ".hbs");
+//--------------------------------------------------------------
+const fs = require('fs');
+// specify the file path and the object to append
+const filePath = 'database.txt';
 
 //----------------------------------------------------------------
 const database = [] //Literals: {rank: 0, name: _name, email: _email, brgLen: _len, brgWeight: _weight, profileIcon: img}
@@ -49,9 +53,30 @@ const ifUserExist = (list) =>{
   return found
 }
 
+//Helper for Top 3 in the leaderboard, when countUsers() is ture, top 3 shows
+const countUsers = () =>{
+  let count = 0;
+  let isTrue = false
+  database.forEach(function(i){
+    count ++
+  })
+
+  if(count > 3) isTrue = true
+  return isTrue
+}
+
 app.get("/leaderboard", (req, res) => {
-  let updatedList = rankUsers(database)
-  res.render("index", {layout:false, rankingList: updatedList})
+  let updatedList = undefined;
+
+  fs.readFile(filePath, 'utf8', function (err, data) {
+    if (err) throw err;
+    console.log(JSON.parse(data))
+  });
+  
+  updatedList = rankUsers(database)
+  let top3 = countUsers() //bool
+
+  res.render("index", {layout:false, rankingList: updatedList, usercount:top3})
 })
 
 app.get("/", (req, res) =>{
@@ -73,13 +98,21 @@ app.post("/update", (req, res) =>{
   const _len = parseFloat(req.body.userLen).toFixed(2)
   const _weight = parseFloat(req.body.userWeight).toFixed(2)
   const img = setImageIcon() //e.g 1.png, 2.png ....
-  
 
   const data = {rank: 0, name: _name, email: _email, brgLen: _len, brgWeight: _weight, profileIcon: img}
-
+  
   const _exists = ifUserExist(data) //checks if participant already exists in the DB, if it does, updates their current data
 
-  if(_exists === false){database.push(data)}
+  if(_exists === false){
+    database.push(data)
+    // convert the object to a string
+    const stringToAppend = JSON.stringify(database) + '\n';
+
+    // open the file for appending
+    fs.appendFile(filePath, stringToAppend, function (err) {
+      if (err) throw err;
+    });
+  }
   else image_count -- //this is because img in line 75 incremented the count
   
   res.render("confirmation", {layout:false, _data: data})
