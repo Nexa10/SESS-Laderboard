@@ -18,9 +18,11 @@ const fs = require('fs');
 const filePath = 'database.txt';
 
 //----------------------------------------------------------------
+//Global Variables
 const database = [] //Literals: {rank: 0, name: _name, email: _email, brgLen: _len, brgWeight: _weight, profileIcon: img}
 
 let image_count = 0 //keeps track of the profiles icons in "images" folder, so every participant have a different icon
+
 
 const setImageIcon = () =>{
   image_count ++
@@ -61,19 +63,15 @@ const countUsers = () =>{
     count ++
   })
 
-  if(count > 3) isTrue = true
+  if(count > 3 || (fs.readFileSync(filePath).length > 3)) isTrue = true
   return isTrue
 }
 
-app.get("/leaderboard", (req, res) => {
-  let updatedList = undefined;
-
-  fs.readFile(filePath, 'utf8', function (err, data) {
-    if (err) throw err;
-    console.log(JSON.parse(data))
-  });
-  
-  updatedList = rankUsers(database)
+app.get("/leaderboard", (req, res) => { 
+  let filedata = fs.readFileSync(filePath, {encoding:'utf8', flag:'r'});
+  const data_to_string = filedata.toString()
+  const file_dB = JSON.parse(data_to_string);
+  let updatedList = rankUsers(file_dB);
   let top3 = countUsers() //bool
 
   res.render("index", {layout:false, rankingList: updatedList, usercount:top3})
@@ -104,16 +102,23 @@ app.post("/update", (req, res) =>{
   const _exists = ifUserExist(data) //checks if participant already exists in the DB, if it does, updates their current data
 
   if(_exists === false){
-    database.push(data)
-    // convert the object to a string
-    const stringToAppend = JSON.stringify(database) + '\n';
+     //Incase of a server restart, the object literals stored in the file has to be push into the database list again. If not the file data would be lost.
+     if(database.length === 0 && (fs.readFileSync(filePath).length > 0)){
+      let filedata = fs.readFileSync(filePath)
+      const data_to_string = filedata.toString()
+      const file_dB = JSON.parse(data_to_string)
 
-    // open the file for appending
-    fs.appendFile(filePath, stringToAppend, function (err) {
-      if (err) throw err;
-    });
+      database.push(file_dB)
+     }
+  
+      database.push(data)
+      const stringToAppend = JSON.stringify(database);
+  
+      fs.writeFileSync(filePath, stringToAppend, function (err) {
+        if (err) throw err;
+      });
   }
-  else image_count -- //this is because img in line 75 incremented the count
+  else image_count -- //this is because img in line 97 (setImageIcon()) incremented the count
   
   res.render("confirmation", {layout:false, _data: data})
 })
