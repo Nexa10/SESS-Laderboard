@@ -19,10 +19,22 @@ const filePath = 'database.txt';
 
 //----------------------------------------------------------------
 //Global Variables
-const database = [] //Literals: {rank: 0, name: _name, email: _email, brgLen: _len, brgWeight: _weight, profileIcon: img}
+let database = [] //Literals: {rank: 0, name: _name, email: _email, brgLen: _len, brgWeight: _weight, profileIcon: img}
 
 let image_count = 0 //keeps track of the profiles icons in "images" folder, so every participant have a different icon
 
+// ######## BD SETUP ##############
+// REVIEW data source
+const mongoose = require('mongoose');
+mongoose.connect("mongodb+srv://dbUser:r2lixEnK5bBBLCyP@cluster0.i80yzc0.mongodb.net/?retryWrites=true&w=majority");
+
+// REVIEW: Define schemas and models
+const Schema = mongoose.Schema
+const bridgeContestSchema  = new Schema({rank: Number, name: String, email: String, brgLen: Number, brgWeight: Number, profileIcon: String})
+const BridgeContest = mongoose.model("bridge_collection", bridgeContestSchema)
+
+let local_data = []
+// ################################
 
 const setImageIcon = () =>{
   image_count ++
@@ -67,21 +79,43 @@ const countUsers = () =>{
   return isTrue
 }
 
-app.get("/leaderboard", (req, res) => { 
-  let filedata = fs.readFileSync(filePath, {encoding:'utf8', flag:'r'});
-  const data_to_string = filedata.toString()
-  const file_dB = JSON.parse(data_to_string);
-  let updatedList = rankUsers(file_dB);
-  let top3 = countUsers() //bool
+app.get("/leaderboard",async (req, res) => { 
+  // let filedata = fs.readFileSync(filePath, {encoding:'utf8', flag:'r'});
+  // const data_to_string = filedata.toString()
+  // const file_dB = JSON.parse(data_to_string);
+  // let updatedList = rankUsers(file_dB);
+  // let top3 = countUsers() //bool
+  // res.render("index", {layout:false, rankingList: updatedList, usercount:top3})
+  try {
+    // find will get all students from db student collection,  async.
+    const studentFromDB = await BridgeContest.find()
+    console.log(`Found ${studentFromDB.length} students`)
+    console.log(studentFromDB[0].name)
+    local_data = []
+    studentFromDB.forEach(function(s){
+      const _name = s.name
+      const _email = s.email
+      const _len = s.brgLen
+      const _weight = s.brgWeight
+      const img = s.profileIcon //e.g 1.png, 2.png ....
+      const data = {rank: 0, name: _name, email: _email, brgLen: _len, brgWeight: _weight, profileIcon: img}
+      local_data.push(data)
+    })
+    let updatedList = rankUsers(local_data);
+    let top3 = countUsers() //bool
+    res.render("index", {layout:false, rankingList: updatedList, usercount:top3})
+} catch(err) {
+    console.log(err)
+}
 
-  res.render("index", {layout:false, rankingList: updatedList, usercount:top3})
 })
 
 app.get("/", (req, res) =>{
   res.render("update", {layout:false})
 })
 
-app.post("/update", (req, res) =>{
+// MARK: UPDATE 
+app.post("/update", async (req, res) =>{
   if(req.body.userName === "" || req.body.userEmail === "" || req.body.userLen === "" || req.body.userWeight === ""){
     res.send("ERROR: Empty Fields!")
     return
@@ -98,25 +132,37 @@ app.post("/update", (req, res) =>{
   const img = setImageIcon() //e.g 1.png, 2.png ....
 
   const data = {rank: 0, name: _name, email: _email, brgLen: _len, brgWeight: _weight, profileIcon: img}
-  
+
   const _exists = ifUserExist(data) //checks if participant already exists in the DB, if it does, updates their current data
 
   if(_exists === false){
      //Incase of a server restart, the object literals stored in the file has to be push into the database list again. If not the file data would be lost.
-     if(database.length === 0 && (fs.readFileSync(filePath).length > 0)){
-      let filedata = fs.readFileSync(filePath)
-      const data_to_string = filedata.toString()
-      const file_dB = JSON.parse(data_to_string)
+    //  if(database.length === 0 && (fs.readFileSync(filePath).length > 0)){
+    //   let filedata = fs.readFileSync(filePath)
+    //   const data_to_string = filedata.toString()
+    //   const file_dB = JSON.parse(data_to_string)
 
-      database.push(file_dB)
-     }
+    //   database.push(file_dB)
+    //  }
   
-      database.push(data)
-      const stringToAppend = JSON.stringify(database);
+    //   database.push(data)
+    //   const stringToAppend = JSON.stringify(database);
   
-      fs.writeFileSync(filePath, stringToAppend, function (err) {
-        if (err) throw err;
-      });
+    //   fs.writeFileSync(filePath, stringToAppend, function (err) {
+    //     if (err) throw err;
+    //   });
+
+      // REVIEW insert 
+      try {
+        const studentToInsert =  BridgeContest(data)
+        await studentToInsert.save()
+  
+        console.log("Done adding")
+          } catch (error) {
+            console.log("error!!")
+            console.log(error)
+          }
+    // ##########
   }
   else image_count -- //this is because img in line 97 (setImageIcon()) incremented the count
   
