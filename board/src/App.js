@@ -6,12 +6,17 @@ function App() {
   return (
     <div className="App">
       <div className='table'>
-        <img src={icon} alt=""/>
-        
+
+        <nav>
+          <img src={icon} alt=""/>
+        </nav>
+  
         <section class="table__header">
             <h1>Rankings</h1>
         </section>
+
         <Table />
+        
       </div>
     </div>
   );

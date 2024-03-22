@@ -1,30 +1,80 @@
 import { useState, useEffect } from "react"
+import icons from "../helper/profileIcons";
+
+
 export default function Podium({rankingList}) {
     const [key, setKey] = useState(0);
+    const[list, setList] = useState([]);
 
-    // Effect hook to update the key, which triggers re-rendering
     useEffect(() => {
-        setKey(prevKey => prevKey + 1); // Increment the key to force re-render
-    }, []);
-    return(
-        <section className="top3" key={key}>
-            <div className="top_rank" >
-                <span className="rank_num" >{rankingList[0].rank}</span>
-                <img src={rankingList[0].profileIconUrl} alt="" />
-                <p>{rankingList[0].name}</p>
-            </div>
-            
-            <div className="top_rank">
-                <span className="rank_num">{rankingList[1].rank}</span>
-                <img src={rankingList[1].profileIconUrl} alt="" />
-                <p>{rankingList[1].name}</p>
-            </div>
+        // swaps the first two elements in the array, to make number 1 show in the center
+        const swap = (arr, i, j) => {
+            const temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
 
-            <div className="top_rank">
-                <span className="rank_num">{rankingList[2].rank}</span>
-                <img src={rankingList[2].profileIconUrl} alt="" />
-                <p>{rankingList[2].name}</p>
-            </div>
+        const temp_list = [...rankingList].map((item, idx) => {
+            item.pos = idx + 1;
+            return item;
+        })
+        
+        if(temp_list.length > 1)
+            swap(temp_list, 0, 1);
+
+        setList(temp_list);
+
+        // triggers re-rendering
+        setKey(prevKey => prevKey + 1);
+    
+    }, [rankingList]);
+    
+
+    return(
+        <section className="top3" >
+            {
+                list.map((row, index) => {
+                    return <PodiumRow key={index} {...row} />
+                })
+            }
         </section>
     )
+};
+
+
+const style = {
+    1:{
+        div: { backgroundColor: '#8542d1', minHeight: '200px'},
+        span: {fontSize: '100px'}
+    },
+    2:{
+        div: {backgroundColor: '#ffae00', minHeight: '180px'},
+        span: {fontSize: '80px'}
+    },
+    3:{
+        div: {backgroundColor: '#ff4d4d', minHeight: '160px'},
+        span: {fontSize: '60px'}
+    }
 }
+
+function PodiumRow({name, length, weight, profileIconIndex, pos}){
+ 
+    return(
+        <div className="top_rank" style={style[pos].div}>
+        <span className="rank_num" style={style[pos].span}>
+            {pos}
+        </span>
+        <img 
+            src={icons[profileIconIndex]} 
+            alt="" 
+        />
+        <p>{name}</p>
+        <span style={{color:"white", fontSize:"15px", opacity:"70%"}}>
+            {`L:${length}`}
+        </span>
+        <span style={{color:"white", fontSize:"15px", opacity:"70%"}}>
+            {`W: ${weight}`}
+        </span>
+    </div>
+    )
+};
