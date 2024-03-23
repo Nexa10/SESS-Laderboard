@@ -49,12 +49,23 @@ export default function InsertModal({onTrigger}) {
 
   const handleSubmit = (e) => {
       e.preventDefault();
+
+      // Error handling
       if (!name || !height || !weight) {
           alert('Please fill in all fields');
           return;
       }
+      if (name.length < 3) {
+        alert('Name is to short, must be at least 3 characters long');
+        return;
+      }
+      if (height < 1|| weight < 1) {
+        alert('Height and Weight fields must be numbers greater than 0');
+        return;
+      }
       
       const newContestant = {name:name, length: height, weight: weight};
+      
       // send data to server
       fetch(url, {
           method: "POST",
@@ -62,18 +73,20 @@ export default function InsertModal({onTrigger}) {
               "Content-Type": "application/x-www-form-urlencoded"
           },
           body: new URLSearchParams(newContestant)
-      }).then(response => {
+      })
+      .then(response => {
         if (!response.ok) {
-            alert('Error: Contestant added');
+            alert('Error: Contestant NOT added');
         }
       })
+      .catch((err) => console.log(err));
       
-      onTrigger();
+      onTrigger(); // triggers parent component (table) to update
       handleClose();
   };
 
   return (
-    <div>
+    <>
       <img src={addIcon} alt="" style={{width:'50px', height:'50px', cursor:'pointer'}} onClick={handleOpen}/>
       
       <Modal
@@ -126,7 +139,8 @@ export default function InsertModal({onTrigger}) {
           </Button>
         </Box>
       </Modal>
-    </div>
+
+    </>
   );
 }
 

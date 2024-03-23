@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback} from "react";
 import Podium from "./Podium";
 import InsertModal from "./InsertModal";
 import icons from "../helper/profileIcons";
+import logo from "../assets/icons/SESS.png" 
   
 export default function Table() {
     const [data, setData] = useState([]) // expects a sorted array of objects
@@ -19,17 +20,34 @@ export default function Table() {
         .then(response=>{
             if(response.ok) return response.json()
         })
-        .then(data=>setData(data))
+        .then(data=>{
+            if(data){
+                setData(data);
+            }
+        })
         .catch((err)=>console.log(err))
     })
 
     useEffect(() => {
         triggerFetch();
-    }, [[], data])
+    }, [data])
     
     return(
-        <>
-            <InsertModal onTrigger={triggerFetch}/>
+        <div className='table'>
+            <nav>
+                <div className="logo">
+                    <img src={logo} alt="SESS" />
+                </div>
+
+                <InsertModal onTrigger={triggerFetch}/>
+            </nav>
+    
+            <section class="table__header">
+                <h1>Rankings</h1>
+                
+            </section>
+
+            
             <section className="table__body">
                 {
                     data.length > 3 && <Podium rankingList={data.slice(0, 3)} />
@@ -59,7 +77,7 @@ export default function Table() {
                     </tbody>
                 </table>
             </section>
-        </>
+        </div>
     )
 }
 

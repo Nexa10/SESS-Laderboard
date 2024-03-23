@@ -3,7 +3,6 @@ import icons from "../helper/profileIcons";
 
 
 export default function Podium({rankingList}) {
-    const [key, setKey] = useState(0);
     const[list, setList] = useState([]);
 
     useEffect(() => {
@@ -23,12 +22,8 @@ export default function Podium({rankingList}) {
             swap(temp_list, 0, 1);
 
         setList(temp_list);
-
-        // triggers re-rendering
-        setKey(prevKey => prevKey + 1);
     
     }, [rankingList]);
-    
 
     return(
         <section className="top3" >
@@ -61,20 +56,20 @@ function PodiumRow({name, length, weight, profileIconIndex, pos}){
  
     return(
         <div className="top_rank" style={style[pos].div}>
-        <span className="rank_num" style={style[pos].span}>
-            {pos}
-        </span>
-        <img 
-            src={icons[profileIconIndex]} 
-            alt="" 
-        />
-        <p>{name}</p>
-        <span style={{color:"white", fontSize:"15px", opacity:"70%"}}>
-            {`L:${length}`}
-        </span>
-        <span style={{color:"white", fontSize:"15px", opacity:"70%"}}>
-            {`W: ${weight}`}
-        </span>
-    </div>
+            <span className="rank_num" style={style[pos].span}>
+                {pos}
+            </span>
+            <img 
+                src={icons[profileIconIndex]} 
+                alt="" 
+            />
+            <p>{name}</p>
+            <span style={{color:"white", fontSize:"15px", opacity:"70%"}}>
+                {`L: ${length}`}
+            </span>
+            <span style={{color:"white", fontSize:"15px", opacity:"70%"}}>
+                {`W: ${weight}`}
+            </span>
+        </div>
     )
 };
