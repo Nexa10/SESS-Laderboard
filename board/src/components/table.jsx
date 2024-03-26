@@ -4,11 +4,12 @@ import Podium from "./Podium";
 import InsertModal from "./InsertModal";
 import icons from "../helper/profileIcons";
 import logo from "../assets/icons/SESS.png" 
+import domain from "../helper/domain";
   
 export default function Table() {
     const [data, setData] = useState([]) // expects a sorted array of objects
    
-    const url = "http://localhost:8080/getAll";
+    const url = `${domain}getAll`
 
     const triggerFetch = useCallback(() => {
         fetch(url, {

@@ -8,6 +8,8 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import addIcon from '../assets/icons/add.svg';
 
+import domain from '../helper/domain';
+
 const style = {
   position: 'absolute',
   top: '50%',
@@ -29,7 +31,7 @@ export default function InsertModal({onTrigger}) {
   const [name, setName] = useState('');
   const [height, setHeight] = useState(0);
   const [weight, setWeight] = useState(0);
-  const url = "http://localhost:8080/new"
+  const url = `${domain}new`
   const reset = () => {
       setName('');
       setHeight(0);
