@@ -1,21 +1,8 @@
-import { MongoClient, ServerApiVersion } from 'mongodb';
-import dotenv from 'dotenv';
 import {readJSON, writeJSON} from '../utils/icon-index.js'
-
-dotenv.config();
-const uri = `mongodb+srv://${process.env.REACT_APP_MONGO_USERNAME}:${process.env.REACT_APP_MONGO_PASSWORD}@cluster0.lu9g8kk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
-let iconIdxCache = await readJSON(); // reads once from localDB.json
-
-const client = new MongoClient(uri, {
-    serverApi: {
-      version: ServerApiVersion.v1,
-      strict: true,
-      deprecationErrors: true,
-    }
-  });
+import client from '../utils/client-config.js';
   
 const collection = client.db('Projects').collection('new2024_Comp');
-
+let iconIdxCache = await readJSON(); // reads once from json file in mongo
 
 async function fetchData(){
     const option = {
@@ -46,6 +33,7 @@ async function insertData(data){
     try {
         const doc = await collection.insertOne({
             name: data.name,
+            email: data.email,
             length: parseInt(data.length),
             weight: parseInt(data.weight),
             profileIconIndex: iconIdxCache++,
@@ -53,7 +41,7 @@ async function insertData(data){
         }); 
 
         iconIdxCache = iconIdxCache >= 40 ? 0 : iconIdxCache;
-        writeJSON(iconIdxCache); // update the localDB.json
+        writeJSON(iconIdxCache); // update the json in mongo
 
         return doc.insertedId?? null;
     } catch (error) {

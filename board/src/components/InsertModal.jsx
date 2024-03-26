@@ -23,17 +23,21 @@ const style = {
   p: 4,
   display: 'flex',
   flexDirection: 'column',
+  gap: '15px',
   
 };
 
 export default function InsertModal({onTrigger}) {
   const [open, setOpen] = React.useState(false);
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [height, setHeight] = useState(0);
   const [weight, setWeight] = useState(0);
+ 
   const url = `${domain}new`
   const reset = () => {
       setName('');
+      setEmail('');
       setHeight(0);
       setWeight(0);
   };
@@ -53,12 +57,12 @@ export default function InsertModal({onTrigger}) {
       e.preventDefault();
 
       // Error handling
-      if (!name || !height || !weight) {
+      if (!name || !email || !height || !weight) {
           alert('Please fill in all fields');
           return;
       }
-      if (name.length < 3) {
-        alert('Name is to short, must be at least 3 characters long');
+      if (name.length < 3 || email.length < 8) {
+        alert('Name or Email is too short');
         return;
       }
       if (height < 1|| weight < 1) {
@@ -66,7 +70,7 @@ export default function InsertModal({onTrigger}) {
         return;
       }
       
-      const newContestant = {name:name, length: height, weight: weight};
+      const newContestant = {name:name, email:email, length: height, weight: weight};
       
       // send data to server
       fetch(url, {
@@ -112,7 +116,16 @@ export default function InsertModal({onTrigger}) {
             onChange={(e) => setName(e.target.value)}
           />
 
-          <Box sx={{display: 'flex', justifyContent:'space-between', marginBlock:'15px'}}>
+          <TextField 
+            id="name-field" 
+            label="Email" 
+            variant="outlined"
+            sx={{ color: 'white', width: '100%' }}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
+          <Box sx={{display: 'flex', justifyContent:'space-between'}}>
             <TextField 
               id="length-field" 
               label="Length" 

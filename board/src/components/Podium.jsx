@@ -63,7 +63,7 @@ function PodiumRow({name, length, weight, profileIconIndex, pos}){
                 src={icons[profileIconIndex]} 
                 alt="" 
             />
-            <p>{name}</p>
+            <p style={{fontSize:"45px"}}>{name}</p>
             <span style={{color:"white", fontSize:"15px", opacity:"70%"}}>
                 {`L: ${length}`}
             </span>
