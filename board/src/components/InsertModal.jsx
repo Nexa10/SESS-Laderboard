@@ -152,6 +152,7 @@ export default function InsertModal({onTrigger}) {
             onClick={handleSubmit}>
               Create
           </Button>
+          
         </Box>
       </Modal>
 

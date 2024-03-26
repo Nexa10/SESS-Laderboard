@@ -18,15 +18,9 @@ async function fetchData(){
 
     try {
         const data = await collection.find({}, option).toArray();
-        if(data.length > 0){
-            return data.sort((a, b) => b.rank - a.rank);
-        }
-        else{
-            return [];
-        }
-    } catch (error) {
-        console.log(error);
+        return data.length > 0 ? data.sort((a, b) => b.rank - a.rank) : [];
     } 
+    catch (error) { console.log(error);} 
   }
 
 async function insertData(data){
@@ -44,10 +38,8 @@ async function insertData(data){
         writeJSON(iconIdxCache); // update the json in mongo
 
         return doc.insertedId?? null;
-    } catch (error) {
-        console(error);
     }
+    catch (error) { console.log(error);} 
 }
-
 
 export {fetchData, insertData};

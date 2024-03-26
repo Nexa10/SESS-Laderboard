@@ -45,14 +45,12 @@ export default function Table() {
     
             <section class="table__header">
                 <h1>Rankings</h1>
-                
             </section>
 
             
             <section className="table__body">
-                {
-                    data.length > 3 && <Podium rankingList={data.slice(0, 3)} />
-                }
+                { data.length > 3 && <Podium rankingList={data.slice(0, 3)} /> }
+
                 <table>
                     <thead>
                         <tr>
@@ -64,8 +62,8 @@ export default function Table() {
                     </thead>
                     <tbody>
                         {
-                            // server sorts/ranks the data before sending it to the client
-                            // shows podium data first if data length is greater than 6
+                            // server sorts/ranks the data before sending
+                            // shows podium if data length is greater than 3
                             data &&
                             data.length > 3?
                             data.slice(3).map((row, index) => {
