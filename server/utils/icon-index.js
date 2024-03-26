@@ -3,7 +3,7 @@
 import { writeFile, promises} from "fs";
 import filepath from "path";
 
-const __dirname = "/Users/dennisaudu/Desktop/Projects/leaderboard/SESS-Laderboard/server/assets/"
+const __dirname = "server/assets/"
 const path = filepath.join(__dirname, 'localDB.json');
 const MAX = 40;
 
