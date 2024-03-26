@@ -49,7 +49,7 @@ async function insertData(data){
             length: parseInt(data.length),
             weight: parseInt(data.weight),
             profileIconIndex: iconIdxCache++,
-            rank: rank(parseInt(data.length), parseInt(data.weight)),
+            rank: parseInt(data.length) + parseInt(data.weight),
         }); 
 
         iconIdxCache = iconIdxCache >= 40 ? 0 : iconIdxCache;
@@ -61,9 +61,5 @@ async function insertData(data){
     }
 }
 
-function rank(len, wgt) {
-    const [w1, w2] = [0.5, 0.7] // weights of each param to rank
-    return Math.floor(w1 * len + w2 * wgt);
-}
 
 export {fetchData, insertData};
