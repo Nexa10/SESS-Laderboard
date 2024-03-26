@@ -36,7 +36,6 @@ export default function Podium({rankingList}) {
     )
 };
 
-
 const style = {
     1:{
         div: { backgroundColor: '#8542d1', minHeight: '200px'},
@@ -52,8 +51,9 @@ const style = {
     }
 }
 
+
 function PodiumRow({name, length, weight, profileIconIndex, pos}){
- 
+
     return(
         <div className="top_rank" style={style[pos].div}>
             <span className="rank_num" style={style[pos].span}>
@@ -63,11 +63,8 @@ function PodiumRow({name, length, weight, profileIconIndex, pos}){
                 src={icons[profileIconIndex]} 
                 alt="" 
             />
-            <p style={{
-                fontSize: 'clamp(20px, calc(20px + 1vw), 45px)',
-            }}
-            >   
-                {name}
+            <p>   
+                { name }
             </p>
             <span style={{color:"white", fontSize:"15px", opacity:"70%"}}>
                 {`L: ${length}`}
